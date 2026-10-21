@@ -1,0 +1,12 @@
+Adding MCP server REMOTE to Claude Desktop 
+
+fastmcp install claude-desktop main.py `
+  --name Time_Tracker_MCP `
+  --project "D:\Agentic AI\Time_tracker_project" `
+  --config-path "C:\Users\macha\AppData\Local\Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude"
+
+
+
+
+
+

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeTrack</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⏱</span>
+      <h1>TimeTrack</h1>
+    </div>
+    <p class="tagline">Log hours. See where the time goes.</p>
+  </header>
+
+  <main class="container">
+    <!-- Stat cards -->
+    <section class="stats">
+      <div class="stat"><span class="stat-label">Total hours</span><span class="stat-value" id="stat-hours">0</span></div>
+      <div class="stat"><span class="stat-label">Entries</span><span class="stat-value" id="stat-entries">0</span></div>
+      <div class="stat"><span class="stat-label">Projects</span><span class="stat-value" id="stat-projects">0</span></div>
+      <div class="stat"><span class="stat-label">Employees</span><span class="stat-value" id="stat-employees">0</span></div>
+    </section>
+
+    <div class="grid">
+      <!-- Log time form -->
+      <section class="card">
+        <h2>Log time</h2>
+        <form id="entry-form">
+          <label>Employee name
+            <input name="employee_name" list="employee-list" required placeholder="e.g. Asha Patel">
+          </label>
+          <label>Project
+            <input name="project" list="project-list" required placeholder="e.g. Website Redesign">
+          </label>
+          <div class="row">
+            <label>Date
+              <input type="date" name="entry_date" required>
+            </label>
+            <label>Hours
+              <input type="number" name="hours" min="0.25" max="24" step="0.25" required placeholder="0.0">
+            </label>
+          </div>
+          <label>Description
+            <textarea name="description" rows="3" placeholder="What did you work on?"></textarea>
+          </label>
+          <button type="submit" class="btn">Save entry</button>
+          <p id="form-message" class="message" role="status"></p>
+        </form>
+        <datalist id="employee-list"></datalist>
+        <datalist id="project-list"></datalist>
+      </section>
+
+      <!-- Project summary -->
+      <section class="card">
+        <h2>Project summary</h2>
+        <select id="summary-project"></select>
+        <p class="summary-total" id="summary-total"></p>
+        <div id="summary-bars" class="bars"></div>
+      </section>
+    </div>
+
+    <!-- Entries table -->
+    <section class="card">
+      <div class="card-head">
+        <h2>Time entries</h2>
+        <input id="search" type="search" placeholder="Filter by name, project or description…">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Employee</th>
+              <th>Project</th>
+              <th class="num">Hours</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="entries-body"></tbody>
+        </table>
+        <p id="empty" class="empty" hidden>No entries match.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
