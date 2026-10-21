@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -6,12 +7,27 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import db_creation as db
+from main import mcp
 
 STATIC_DIR = Path(__file__).parent / "static"
 
+# MCP over HTTP at /mcp. Stateless + JSON responses because Vercel is serverless:
+# each request can land on a fresh instance, so no session can be kept between calls.
+mcp_app = mcp.http_app(path="/mcp", stateless_http=True, json_response=True)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db.init_db()
+    # The MCP session manager must be started, or every /mcp request fails.
+    async with mcp_app.lifespan(app):
+        yield
+
+
 app = FastAPI(
     title="Time Tracker API",
-    description="A simple time tracker API"
+    description="A simple time tracker API",
+    lifespan=lifespan,
 )
 
 # Serve everything inside /static (css, js) at the URL /static/...
@@ -24,11 +40,6 @@ class TimeEntryIn(BaseModel):
     entry_date: str  # YYYY-MM-DD
     hours: float = Field(gt=0, le=24)
     description: str = ""
-
-
-@app.on_event("startup")
-def startup():
-    db.init_db()
 
 
 @app.get("/")
@@ -71,3 +82,8 @@ def project_summary(project: str):
 @app.get("/api/timesheet/{employee_name}")
 def timesheet(employee_name: str, start_date: str | None = None, end_date: str | None = None):
     return db.get_timesheet(employee_name, start_date, end_date)
+
+
+# Mounted last so the routes above (/, /api/..., /static) take priority;
+# anything else, i.e. /mcp, is handled by the MCP server.
+app.mount("/", mcp_app)
