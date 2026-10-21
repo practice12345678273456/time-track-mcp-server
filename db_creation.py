@@ -8,12 +8,10 @@ import sqlite3
 from pathlib import Path
 
 
-DB_PATH = Path(
-    os.environ.get(
-        "TIMETRACK_DB_PATH",
-        Path(__file__).parent / "timetrack.db"
-    )
-)
+# On Vercel the project folder is read-only; only /tmp is writable.
+DEFAULT_DB_PATH = Path("/tmp/timetrack.db") if os.environ.get("VERCEL") else Path(__file__).parent / "timetrack.db"
+
+DB_PATH = Path(os.environ.get("TIMETRACK_DB_PATH", DEFAULT_DB_PATH))
 
 
 def get_connection():
